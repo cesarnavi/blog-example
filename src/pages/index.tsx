@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
-import { Post } from "@/types/Post";
+import { Post, FilterBy } from "@/types";
 //Components
 import Link from "@/components/Link";
 import AddPostButton from "@/components/AddPostButton";
 import useNetworkStatus from "@/hooks/useNetworkStatus";
 
+
 export default function Home() {
-  const [posts,setPosts] = useState<Post[]>();
+  const [posts,setPosts] = useState<Post[]>([]);
+  const [search,setSearch] = useState("");
+  const [filterBy,setFilterBy] = useState<FilterBy>("title");
   const { isOnline } = useNetworkStatus();
 
-  useEffect(()=>{
+  useEffect(()=>{ // Fetch posts
     fetch("/api/posts")
     .then((res)=>res.json())
     .then((data)=>setPosts(data))
@@ -17,7 +20,6 @@ export default function Home() {
       //catched failed api call
     })
   },[]);
-
 
   return (
     <div className="h-screen bg-white dark:bg-gray-800">
@@ -34,12 +36,50 @@ export default function Home() {
           </div>
            <AddPostButton disabled={isOnline==false} />
           </div>
-
       }
 
       <div className="grid xl:grid-cols-2 gap-2 ">
+        {posts && posts.length > 0  && <div style={{alignItems:"center"}} className="col-span-full p-2 flex">
+          <div className="flex gap-2 " style={{alignItems: "center"}}>
+            {/* Search icon */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="h-6 w-6 text-gray-900 dark:text-white"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+              />
+            </svg>
+            {/* Search Input */}
+            <input 
+              onChange={(e)=>setSearch(e.target.value)}  
+              type="search" 
+              placeholder="Buscar..."
+              className="rounded-md p-2 border-2 dark:border-0 text-black "
+            />
+            <div className="flex ml-2"> 	
+                <label htmlFor="filter-by" className="block mb-2 text-sm  text-gray-900 dark:text-gray-400">Filtrar por:</label>
+                <select onChange={(e)=>setFilterBy(e.target.value as FilterBy)} defaultValue={"title"} id="filter-by" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" >
+                <option value={"title"}>Titulo</option>
+                <option value={"author"}>Autor</option>
+                <option value={"body"}>Contenido</option>
+              </select>
+              </div>
+          </div>
+        </div>}
         { 
-          posts && posts.map((p)=>{
+          posts && posts.filter((p)=>{
+            if(filterBy && search){
+              return p[filterBy]?.toLowerCase().includes(search.toLowerCase());
+            }
+            return true;
+          }).map((p)=>{
 
             return <article key={p.slug} className=" bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 py-4 px-2">
               {/* Author */}

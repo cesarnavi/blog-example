@@ -1,3 +1,5 @@
+export type FilterBy = "author" | "title" | "body";
+
 export type Post = {
     id: Number;
     path: string,
