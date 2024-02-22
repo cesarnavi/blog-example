@@ -1,61 +1,69 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { Post } from "@/types/Post";
+import prisma from "@/lib/prisma/connection";
 
-const posts = [
-  {
-    id: 1,
-    path: "como-hacer-pruebas",
-    title: "Bienvenido al blog de prueba",
-    slug: "Como realizar un codigo eficiente en nodeJS",
-    author: "Cesar Castillo",
-    thumbnail: "https://static-cse.canva.com/blob/1358487/1600w-wlXEWqHuexQ.jpg",
-    created_at: "2024-01-19",
-    body: `Lorem ipsum es el texto que se usa habitualmente en diseño gráfico en demostraciones de tipografías o de borradores de diseño para probar el diseño visual antes de insertar el texto final.
-    Aunque no posee actualmente fuentes para justificar sus hipótesis, el profesor de filología clásica Richard McClintock asegura que su uso se remonta a los impresores de comienzos del siglo xvi.1​ Su uso en algunos editores de texto muy conocidos en la actualidad ha dado al texto lorem ipsum nueva popularidad.
-    El texto en sí no tiene sentido aparente, aunque no es aleatorio, sino que deriva de un texto de Cicerón en lengua latina, a cuyas palabras se les han eliminado sílabas o letras. El significado del mismo no tiene importancia, ya que solo es una demostración o prueba. El texto procede de la obra De finibus bonorum et malorum (Sobre los límites del bien y del mal) que comienza con:`
-  },
-  {
-    id: 2,
-    path: "prueba-2",
-    title: "Prueba 2",
-    slug: "Como realizar un codigo eficiente en nodeJS",
-    author: "Juan Perez",
-    thumbnail: "https://static-cse.canva.com/blob/1358487/1600w-wlXEWqHuexQ.jpg",
-    created_at: "2024-01-20",
-    body: `Existen múltiples variantes del texto original, algunas casi sin parecido con él. Estas versiones incluyen letras adicionales que no son comunes en latín (como la k, w y z) o palabras sin sentido como zzril, takimata y gubeergren que intentan hacer la distribución aún más parecida al inglés.
+export const dynamic = "force-dynamic";
 
-    Varios editores de texto proveen la funcionalidad de generación de lorem ipsum.`
-  },
-  {
-    id: 3,
-    path: "prueba-2",
-    title: "Prueba 2",
-    slug: "Como realizar un codigo eficiente en nodeJS",
-    author: "Juan Perez",
-    thumbnail: "https://static-cse.canva.com/blob/1358487/1600w-wlXEWqHuexQ.jpg",
-    created_at: "2024-01-20",
-    body: `Existen múltiples variantes del texto original, algunas casi sin parecido con él. Estas versiones incluyen letras adicionales que no son comunes en latín (como la k, w y z) o palabras sin sentido como zzril, takimata y gubeergren que intentan hacer la distribución aún más parecida al inglés.
-
-    Varios editores de texto proveen la funcionalidad de generación de lorem ipsum.`
-  },
-    {
-      id: 4,
-      path: "prueba-2",
-      title: "Prueba 2",
-      slug: "Como realizar un codigo eficiente en nodeJS",
-      author: "Juan Perez",
-      thumbnail: "https://static-cse.canva.com/blob/1358487/1600w-wlXEWqHuexQ.jpg",
-      created_at: "2024-01-20",
-      body: `Existen múltiples variantes del texto original, algunas casi sin parecido con él. Estas versiones incluyen letras adicionales que no son comunes en latín (como la k, w y z) o palabras sin sentido como zzril, takimata y gubeergren que intentan hacer la distribución aún más parecida al inglés.
+function slugify(str:string) {
+  return String(str)
+    .normalize('NFKD') // split accented characters into their base characters and diacritical marks
+    .replace(/[\u0300-\u036f]/g, '') // remove all the accents, which happen to be all in the \u03xx UNICODE block.
+    .trim() // trim leading or trailing whitespace
+    .toLowerCase() // convert to lowercase
+    .replace(/[^a-z0-9 -]/g, '') // remove non-alphanumeric characters
+    .replace(/\s+/g, '-') // replace spaces with hyphens
+    .replace(/-+/g, '-') // remove consecutive hyphens
+    .substring(0,200) // max slug length
   
-      Varios editores de texto proveen la funcionalidad de generación de lorem ipsum.`
-    }
-  
-]
+}
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Array<Post>>,
+  res: NextApiResponse<any>,
 ) {
-  res.status(200).json(posts);
+    
+  if(req.method == "GET"){ //Get post from database
+     const posts = await prisma.post.findMany({
+      where: {
+        published: true
+      },
+      orderBy: {
+        created_at:'desc'
+      }
+    });
+   
+    return res.status(200).json(posts);
+  }else if(req.method == "POST"){//Add entries, save it on database
+    const { title, author, body } = req.body;
+    
+    if(!title || !author || !body){
+      return res.status(400).send({message:"Titulo, autor y contenido son requeridos"})
+    }
+
+    const slug = slugify(title);
+    let slugUsed = await prisma.post.findFirst({
+      where: {
+        slug: slug,
+      },
+    });
+
+    if(slugUsed){
+      return res.status(400).send({message: "Nombre de post ya utilizado"});
+    }
+
+    //Insert element into database
+    const result = await prisma.post.create({
+      data: {
+        title: title,
+        body: body,
+        author: author,
+        slug,
+        created_at: new Date()
+      },
+    });
+    return res.json(result);
+  }else{
+    //TODO: Modify and delete entries with PUT and DELETE
+    return res.status(405).send({message:"Method not allowed"});
+  }
+ 
 }

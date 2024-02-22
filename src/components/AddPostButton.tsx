@@ -1,10 +1,32 @@
-import { useState } from "react"
+import React, { ReactElement, ReactNode, useState } from "react"
+import axios from "axios";
+import { useRouter } from "next/router";
+
+function Modal({
+    onClose,
+    children
+}: {onClose: ()=>void, children: ReactNode}){
+    return <div
+    className="fixed flex flex-col z-50 bottom-[100px] top-0 right-0  left-0 sm:top-auto sm:right-5 sm:left-auto h-[calc(100%-95px)] w-full sm:w-[450px] overflow-auto min-h-[250px] sm:h-[600px] border border-gray-300 bg-white dark:bg-gray-800 shadow-2xl rounded-md"
+    >
+        <div className="flex p-5 flex-col justify-center items-center h-20">
+            <h3 className=" text-lg text-black dark:text-white">Añadir Entrada</h3>
+        </div>
+        <div className="flex-grow p-4"> 
+            {
+                children
+            }
+        </div>
+
+    </div>
+}
 
 export default function AddPostButton({
     disabled
 }: {disabled: boolean}){
 
     const [modalOpen, setModalOpen] = useState(false);
+    const router = useRouter();
 
     const handleClick = ()=>{
         if(modalOpen){
@@ -13,7 +35,104 @@ export default function AddPostButton({
         setModalOpen(true);
     }
 
+    const handleSubmit = async(e: any)=>{
+        e.preventDefault();
+        if(disabled){
+            window.alert("No cuenta con conexion a internet");
+            return;
+        }
+        //TODO: do ome validations
+        try{
+            await axios.post("/api/posts",{
+                    title: e.target?.title?.value,
+                    author: e.target.author.value,
+                    body: e.target.body.value
+                }
+            );
+            setModalOpen(false);
+            router.push("/",undefined, { shallow: true});
+        }catch(e:any){
+            console.log(e)
+            let msg = e?.response?.data?.message || e.message || "Contacate a soporte"
+            window.alert("Error guardando entrada: " + msg)
+        }
+    }
+
     return <>
+        {
+            modalOpen && <Modal onClose={()=>setModalOpen(false) }>
+                <form
+                    onSubmit={handleSubmit}
+                    method="POST"
+                    id="form"
+                    className="text-black "
+                >
+                    <div className="mb-4">
+                        <label
+                        htmlFor="title"
+                        className="block mb-2 text-sm text-gray-600 dark:text-gray-400"
+                        >
+                            Titulo
+                        </label>
+                        <input
+                        type="text"
+                        name="name"
+                        id="title"
+                        placeholder="Titulo entrada"
+                        required
+                        className="w-full px-3 py-2 bg-white placeholder-gray-300 border border-gray-300 rounded-md "
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label
+                        htmlFor="author"
+                        className="block mb-2 text-sm text-gray-600 dark:text-gray-400"
+                        >
+                            Autor
+                        </label>
+                        <input
+                        type="text"
+                        name="author"
+                        id="author"
+                        placeholder="Ej. Juan Perez"
+                        required
+                        className="w-full px-3 py-2 bg-white placeholder-gray-300 border border-gray-300 rounded-md focus:outline-none"
+                        />
+                    </div>                    
+                    <div className="mb-4">
+                    <label
+                        htmlFor="body"
+                        className="block mb-2 text-sm text-gray-600 dark:text-gray-400"
+                        >
+                            Contenido
+                        </label>
+                    <textarea
+                        rows={8}
+                        name="body"
+                        id="body"
+                        placeholder="Lorem ipsum..."
+                        className="w-full  px-3 py-2 bg-white placeholder-gray-300 border border-gray-300 rounded-md focus:outline-none "
+                        required
+                    ></textarea>
+                    </div>
+                    <div className="mb-3">
+                    <button
+                        type="submit"
+                        className="w-full px-3 py-4 text-white bg-green-600 focus:bg-green-600 rounded-lg focus:outline-none"
+                    >
+                        Publicar
+                    </button>
+                    <button
+                        onClick={()=>setModalOpen(false)}
+                        type="button"
+                        className="mt-2 w-full px-3 py-4 text-white bg-gray-400 rounded-lg"
+                    >
+                        Cerrar
+                    </button>
+                    </div>
+                </form>
+            </Modal>
+        }
         <button
           disabled={disabled}
           onClick={handleClick}

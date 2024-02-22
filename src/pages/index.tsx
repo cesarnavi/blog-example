@@ -1,34 +1,28 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Post, FilterBy } from "@/types";
 //Components
 import Link from "@/components/Link";
 import AddPostButton from "@/components/AddPostButton";
 import useNetworkStatus from "@/hooks/useNetworkStatus";
+import axios from "axios";
+import useSWR, { Fetcher } from "swr";
 
+const fetcher: Fetcher<Array<Post>, string>= (url:string)=>axios.get(url).then((res)=>res.data);
 
 export default function Home() {
-  const [posts,setPosts] = useState<Post[]>([]);
+  const { data: posts } = useSWR("/api/posts",fetcher);
   const [search,setSearch] = useState("");
   const [filterBy,setFilterBy] = useState<FilterBy>("title");
   const { isOnline } = useNetworkStatus();
 
-  useEffect(()=>{ // Fetch posts
-    fetch("/api/posts")
-    .then((res)=>res.json())
-    .then((data)=>setPosts(data))
-    .catch(()=>{
-      //catched failed api call
-    })
-  },[]);
-
   return (
-    <div className="h-screen bg-white dark:bg-gray-800">
+    <div className="h-screen bg-white dark:bg-gray-800 pb-12">
 
       {
         !isOnline && <h1>Solo podrá visualizar los elementos previamente guardados</h1>
       }
       {
-        posts && posts.length == 0 && <div 
+        posts && posts?.length == 0 && <div 
           style={{alignItems: "center"}}
         className=" w-full text-center  justify-center flex flex-col text-xl  p-6 ">
           <div className="text-black dark:text-white py-2">
@@ -38,7 +32,7 @@ export default function Home() {
           </div>
       }
 
-      <div className="grid xl:grid-cols-2 gap-2 ">
+      <div className="grid xl:grid-cols-2 gap-2  mx-2 sm:mx-6 ">
         {posts && posts.length > 0  && <div style={{alignItems:"center"}} className="col-span-full p-2 flex">
           <div className="flex gap-2 " style={{alignItems: "center"}}>
             {/* Search icon */}
@@ -81,7 +75,7 @@ export default function Home() {
             return true;
           }).map((p)=>{
 
-            return <article key={p.slug} className=" bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 py-4 px-2">
+            return <article key={p.slug} className=" bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 py-4 px-2 rounded-lg">
               {/* Author */}
               <h3 className="flex gap-1 text-gray-600 dark:text-gray-200 text-sm font-light">
               <svg width={20} height={20} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -101,13 +95,13 @@ export default function Home() {
               </h2>
               {/* Body */}
               <p className="space-y-2 text-gray-500 dark:text-gray-300">
-                {p.body ? p.body.substring(0,70) + "..."  : ""}
+                {p.body && p.body.length > 70 ? p.body.substring(0,70) + "..."  : p.body}
               </p>
               {/* Details (date) */}
               <dl className="space-y-2">
                 <dt className="sr-only">Fecha publicacion</dt>
                   <dd className="text-sm font-light leading-6 ">
-                    <time dateTime={p.created_at}>{new Date(p.created_at).toLocaleDateString()}</time>
+                    Publicado <time dateTime={p.created_at}>{new Date(p.created_at).toLocaleDateString()}</time>
                   </dd>
               </dl>
             </article>
