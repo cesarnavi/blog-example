@@ -5,7 +5,7 @@
   "author": "Cesar Castillo",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npx prisma migrate dev --name init & next build",
     "start": "next start",
     "lint": "next lint", 
     "migrate-db": "npx prisma migrate dev --name init"
