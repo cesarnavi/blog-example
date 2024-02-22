@@ -1,7 +1,7 @@
 export type FilterBy = "author" | "title" | "body";
 
 export type Post = {
-    id: Number;
+    id: string;
     path: string,
     title: string;
     body?: string;

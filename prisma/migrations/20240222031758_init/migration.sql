@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `post` MODIFY `body` LONGTEXT NOT NULL,
+    MODIFY `slug` VARCHAR(191) NULL;

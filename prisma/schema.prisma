@@ -17,7 +17,7 @@ model Post {
   id        String  @id @default(cuid())
   author    String
   title     String
-  body   String
+  body   String @db.LongText
   slug String? 
   created_at DateTime 
   published Boolean @default(true)
