@@ -55,8 +55,7 @@ export default function AddPostButton({
             setModalOpen(false);
             
         }catch(e:any){
-            console.log(e)
-            let msg = e?.response?.data?.message || e.message || "Contacate a soporte"
+            let msg = e?.response?.data?.message ||  e.message || "Contacate a soporte"
             window.alert("Error guardando entrada: " + msg)
         }
     }
@@ -66,7 +65,7 @@ export default function AddPostButton({
             modalOpen && <Modal onClose={()=>setModalOpen(false) }>
                 <form
                     onSubmit={handleSubmit}
-                    method="POST"
+                
                     id="form"
                     className="text-black text-sm text-left"
                 >

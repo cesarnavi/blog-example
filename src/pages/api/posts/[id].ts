@@ -8,9 +8,12 @@ export default async function handler(
 ) {
     
   if(req.method == "GET"){ //Get post from database
+
+    const slug = String(req.query.id)
+
      const post = await prisma.post.findFirst({
       where: {
-        slug: req.query.id
+        slug: slug
       }
     });
 

@@ -24,8 +24,8 @@ export default function Home() {
   const posts = isOnline ? data :  (savedPosts ? Object.values(savedPosts) as [Post] : null)
 
   return (
-    <div className="bg-white dark:bg-gray-800 pb-12">
-      {posts && posts?.length == 0 && (
+    <div className="pb-12 h-screen bg-white dark:bg-gray-800">
+      {!posts || (posts && posts.length == 0) && (
         <div
           style={{ alignItems: "center" }}
           className=" w-full text-center  justify-center flex flex-col text-xl  p-6 "
@@ -37,7 +37,7 @@ export default function Home() {
         </div>
       )}
 
-      <div className=" grid xl:grid-cols-2 gap-2  px-2 sm:px-6 w-full">
+      <div className="bg-white dark:bg-gray-800 grid xl:grid-cols-2 gap-2  px-2 sm:px-6 w-full">
         {posts && posts.length > 0 && (
           <div
             style={{ alignItems: "center" }}
@@ -102,7 +102,7 @@ export default function Home() {
               return (
                 <article
                   key={p.slug}
-                  className=" bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 py-4 px-2 rounded-lg"
+                  className="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 py-4 px-2 rounded-lg"
                 >
                   {/* Author & save button */}
                   <div className="flex flex-row justify-between">
