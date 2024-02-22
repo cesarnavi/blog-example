@@ -4,8 +4,8 @@
   "private": true,
   "author": "Cesar Castillo",
   "scripts": {
-    "dev": "next dev",
-    "build": "npx prisma migrate dev --name init & next build",
+    "dev": "npx prisma migrate dev & next dev",
+    "build": "npx prisma migrate deploy & next build",
     "start": "next start",
     "lint": "next lint", 
     "migrate-db": "npx prisma migrate dev --name init"
