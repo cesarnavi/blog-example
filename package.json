@@ -4,11 +4,12 @@
   "private": true,
   "author": "Cesar Castillo",
   "scripts": {
-    "dev": "npx prisma migrate dev & next dev",
-    "build": "npx prisma migrate deploy & next build",
+    "postinstall": "prisma generate",
+    "dev": "npx prisma migrate dev && next dev",
+    "build": "npx prisma generate && next build",
     "start": "next start",
     "lint": "next lint", 
-    "migrate-db": "npx prisma migrate dev --name init"
+    "migrate-db": "npx prisma migrate dev"
   },
   "dependencies": {
     "@prisma/client": "^5.10.2",
