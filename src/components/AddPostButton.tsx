@@ -68,7 +68,7 @@ export default function AddPostButton({
                     onSubmit={handleSubmit}
                     method="POST"
                     id="form"
-                    className="text-black "
+                    className="text-black text-sm text-left"
                 >
                     <div className="mb-4">
                         <label

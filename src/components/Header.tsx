@@ -13,14 +13,13 @@ const Header = () => {
         <Link href="/">
           <div className="flex items-center justify-between">
             <div className="mr-3">
-              <Image className='' width={48} height={48} src="/logo.svg" alt="logo"/>
+              <Image className='' width={48} height={48} src="/next.svg" alt="logo"/>
             </div>
           </div>
         </Link>
       </div>
       <div className="flex items-center space-x-4 leading-5 sm:space-x-6">
-       <AddPostButton disabled={isOnline == false}  />
-       
+        <AddPostButton disabled={isOnline == false}  />
         <ThemeSwitch />
       </div>
     </header>
