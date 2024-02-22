@@ -25,5 +25,6 @@ Steps to launch locally
 1. Clone this repo
 2. Add DB_URL enviorment variable with your database credentials 
 3. Run ‘npm install’ command
-4. After dependencies installation, run ‘npm run dev’ command
-5. Go to http://localhost:3000 test it
+4. After dependencies installation, run  "npx prisma migrate dev" command
+5. Run ‘npm run dev’ command
+6. Go to http://localhost:3000 test it
