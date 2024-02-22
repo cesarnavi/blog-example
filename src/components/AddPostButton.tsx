@@ -1,6 +1,7 @@
-import React, { ReactElement, ReactNode, useState } from "react"
+import React, { ReactNode, useState } from "react"
 import axios from "axios";
 import { useRouter } from "next/router";
+import useSWR, { useSWRConfig } from "swr";
 
 function Modal({
     onClose,
@@ -27,6 +28,7 @@ export default function AddPostButton({
 
     const [modalOpen, setModalOpen] = useState(false);
     const router = useRouter();
+    const { mutate } = useSWRConfig()
 
     const handleClick = ()=>{
         if(modalOpen){
@@ -49,8 +51,9 @@ export default function AddPostButton({
                     body: e.target.body.value
                 }
             );
+            mutate("/api/posts")
             setModalOpen(false);
-            router.push("/",undefined, { shallow: true});
+            
         }catch(e:any){
             console.log(e)
             let msg = e?.response?.data?.message || e.message || "Contacate a soporte"
