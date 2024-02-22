@@ -1,20 +1,28 @@
 ## Getting Started
 
-First, run the development server:
+A basic blog example builded with Next.js + Typescript + TailwindCSS + MySQL + Prisma
+Live demo: 
+Features:
+- Responsive design 
+- Dark Mode
+- Offline mode
+- Save posts in localStorage
+- Filter posts by Title, Author and Body Content
+- Add new posts 
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+#### Prerequisites:
+- Node.js 18 or higher
+- MySQL Server installed
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the blog.
+#### Environment Variables
 
+To run this project, you will need to add the following environment variables to your .env file
 
-[API routes] Blog posts can be accessed on [http://localhost:3000/api/post](http://localhost:3000/api/posts)`.
+`DB_URL` mysql://USER:PASSWORD@HOST:PORT/DB_NAME
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Steps to launch locally 
+1. Clone this repo
+2. Add DB_URL enviorment variable with your database credentials 
+3. Run ‘npm install’ command
+4. After dependencies installation, run ‘npm run dev’ command
+5. Go to http://localhost:3000 test it
