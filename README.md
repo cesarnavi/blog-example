@@ -1,7 +1,7 @@
 ## Getting Started
 
 A basic blog example builded with Next.js + Typescript + TailwindCSS + MySQL + Prisma
-Live demo: 
+
 Features:
 - Responsive design 
 - Dark Mode
@@ -10,6 +10,7 @@ Features:
 - Filter posts by Title, Author and Body Content
 - Add new posts 
 
+Live demo: https://blog-example-gules-pi.vercel.app/
 #### Prerequisites:
 - Node.js 18 or higher
 - MySQL Server installed

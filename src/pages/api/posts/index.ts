@@ -51,7 +51,7 @@ export default async function handler(
     }
 
     //Insert element into database
-    const result = await prisma.post.create({
+    await prisma.post.create({
       data: {
         title: title,
         body: body,
@@ -60,7 +60,7 @@ export default async function handler(
         created_at: new Date()
       },
     });
-    return res.json(result);
+    return res.status(201).send("ok");
   }else{
     //TODO: Modify and delete entries with PUT and DELETE
     return res.status(405).send({message:"Method not allowed"});

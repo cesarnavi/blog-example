@@ -1,7 +1,7 @@
 import React, { ReactNode, useState } from "react"
 import axios from "axios";
 import { useRouter } from "next/router";
-import useSWR, { useSWRConfig } from "swr";
+import { useSWRConfig } from "swr";
 
 function Modal({
     onClose,
@@ -37,27 +37,32 @@ export default function AddPostButton({
         setModalOpen(true);
     }
 
-    const handleSubmit = async(e: any)=>{
+    const handleSubmit = (e: any)=>{
         e.preventDefault();
         if(disabled){
             window.alert("No cuenta con conexion a internet");
             return;
         }
         //TODO: do ome validations
-        try{
-            await axios.post("/api/posts",{
-                    title: e.target?.title?.value,
-                    author: e.target.author.value,
-                    body: e.target.body.value
-                }
-            );
-            mutate("/api/posts")
+        axios.post("/api/posts",
+            {
+                title: e.target?.title?.value,
+                author: e.target.author.value,
+                body: e.target.body.value
+            }
+        )
+        .then((res)=>{
+           
+            mutate("/api/posts");
             setModalOpen(false);
-            
-        }catch(e:any){
+        })
+        .catch((e)=>{
+            console.log(e)
             let msg = e?.response?.data?.message ||  e.message || "Contacate a soporte"
             window.alert("Error guardando entrada: " + msg)
-        }
+        })
+        
+        
     }
 
     return <>
