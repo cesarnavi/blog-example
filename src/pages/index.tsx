@@ -15,13 +15,15 @@ const fetcher: Fetcher<Array<Post>, string> = (url: string) =>
 
 
 export default function Home() {
-  const { data } = useSWR("/api/posts", fetcher);
+  const { data, mutate } = useSWR("/api/posts", fetcher);
   const [search, setSearch] = useState("");
   const [filterBy, setFilterBy] = useState<FilterBy>("title");
   const { isOnline } = useNetworkStatus();
   const [savedPosts, save] = useLocalStorage<any>("saved-posts", {});
 
   const posts = isOnline ? data :  (savedPosts ? Object.values(savedPosts) as [Post] : null)
+
+  const handleDelete =(pId: string)=>axios.delete("/api/posts/"+pId).then(()=>{mutate()}).catch(()=>window.alert("Error eliminando elemento"))
 
   return (
     <div className="pb-12 h-screen bg-white dark:bg-gray-800">
@@ -172,7 +174,8 @@ export default function Home() {
                       : p.body}
                   </p>
                   {/* Details (date) */}
-                  <dl className="space-y-2">
+                  <dl className="space-y-2 flex justify-between">
+                    <div>
                     <dt className="sr-only">Fecha publicacion</dt>
                     <dd className="text-sm font-light leading-6 ">
                       Publicado{" "}
@@ -180,6 +183,10 @@ export default function Home() {
                         {new Date(p.created_at).toLocaleDateString()}
                       </time>
                     </dd>
+                    </div>
+                    <div>
+                      <p className="underline text-sm cursor-pointer" onClick={()=>handleDelete(p.id)}>Eliminar</p>
+                    </div>
                   </dl>
                 </article>
               );
